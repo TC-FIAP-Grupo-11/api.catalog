@@ -1,13 +1,15 @@
+using FCG.Lib.Shared.Application.Common.Models;
 using Microsoft.EntityFrameworkCore;
 using FCG.Domain.Entities;
 using FCG.Application.Contracts.Repositories;
 using FCG.Infrastructure.Data.Context;
-using FCG.Application.Common.Models;
+using FCG.Lib.Shared.Infrastructure.Data.Repositories;
 
 namespace FCG.Infrastructure.Data.Repositories;
 
-public class GameRepository(ApplicationDbContext context) : BaseRepository<Game>(context), IGameRepository
-{
+public class GameRepository(ApplicationDbContext context) 
+    : BaseRepository<Game, ApplicationDbContext>(context), IGameRepository {
+        
     public async Task<PagedResult<Game>> GetAllPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
     {
         var query = _context.Games.OrderByDescending(g => g.CreatedAt);

@@ -1,6 +1,6 @@
 using MediatR;
 using FCG.Application.Contracts.Repositories;
-using FCG.Application.Common.Models;
+using FCG.Lib.Shared.Application.Common.Models;
 using FCG.Domain.Entities;
 
 namespace FCG.Application.Queries.Promotions.GetAllPromotions;

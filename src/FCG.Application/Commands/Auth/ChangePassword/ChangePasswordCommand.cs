@@ -1,6 +1,6 @@
 using MediatR;
 using FluentValidation;
-using FCG.Application.Common.Models;
+using FCG.Lib.Shared.Application.Common.Models;
 
 namespace FCG.Application.Commands.Auth.ChangePassword;
 

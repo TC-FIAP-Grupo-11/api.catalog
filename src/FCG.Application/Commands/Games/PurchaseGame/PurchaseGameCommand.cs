@@ -1,4 +1,4 @@
-using FCG.Application.Common.Models;
+using FCG.Lib.Shared.Application.Common.Models;
 using FluentValidation;
 using MediatR;
 

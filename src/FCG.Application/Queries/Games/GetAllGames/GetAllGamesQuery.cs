@@ -1,6 +1,6 @@
 using MediatR;
 using FCG.Domain.Entities;
-using FCG.Application.Common.Models;
+using FCG.Lib.Shared.Application.Common.Models;
 
 namespace FCG.Application.Queries.Games.GetAllGames;
 

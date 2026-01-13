@@ -5,6 +5,8 @@ using FCG.Application.Contracts.Repositories;
 using FCG.Infrastructure.Data.Context;
 using FCG.Infrastructure.Data.Repositories;
 using FCG.Infrastructure.Data.Seed;
+using FCG.Lib.Shared.Application.Contracts.Repositories;
+using FCG.Lib.Shared.Infrastructure.Data.Repositories;
 
 namespace FCG.Infrastructure.Data;
 
@@ -52,7 +54,6 @@ public static class DependencyInjection
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IGameRepository, GameRepository>();
         services.AddScoped<IPromotionRepository, PromotionRepository>();

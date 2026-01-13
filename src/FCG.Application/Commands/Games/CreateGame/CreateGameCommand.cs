@@ -1,6 +1,6 @@
 using MediatR;
 using FluentValidation;
-using FCG.Application.Common.Models;
+using FCG.Lib.Shared.Application.Common.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace FCG.Application.Commands.Games.CreateGame;

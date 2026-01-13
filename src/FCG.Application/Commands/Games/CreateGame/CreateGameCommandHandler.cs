@@ -1,8 +1,8 @@
 using MediatR;
 using FCG.Application.Contracts.Repositories;
 using FCG.Domain.Entities;
-using FCG.Application.Common.Models;
-using FCG.Application.Common.Errors;
+using FCG.Lib.Shared.Application.Common.Models;
+using FCG.Lib.Shared.Application.Common.Errors;
 
 namespace FCG.Application.Commands.Games.CreateGame;
 

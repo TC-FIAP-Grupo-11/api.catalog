@@ -1,9 +1,10 @@
+using FCG.Lib.Shared.Application.Common.Exceptions;
 using MediatR;
 using FCG.Application.Contracts.Auth;
 using FCG.Application.Contracts.Auth.Responses;
-using FCG.Application.Common.Models;
-using FCG.Application.Common.Errors;
-using FCG.Application.Common.Exceptions;
+using FCG.Lib.Shared.Application.Common.Models;
+using FCG.Lib.Shared.Application.Common.Errors;
+using FCG.Lib.Shared.Application.Common.Exceptions;
 
 namespace FCG.Application.Commands.Auth.SignIn;
 

@@ -5,7 +5,7 @@ using FCG.Application.Commands.Promotions.CreatePromotion;
 using FCG.Application.Commands.Promotions.DeactivatePromotion;
 using FCG.Application.Queries.Promotions.GetAllPromotions;
 using FCG.Application.Queries.Promotions.GetPromotionById;
-using FCG.API.Extensions;
+using FCG.Lib.Shared.Application.Extensions;
 using FCG.API.Contracts.Responses;
 
 namespace FCG.API.Controllers;

@@ -1,13 +1,15 @@
+using FCG.Lib.Shared.Application.Common.Models;
 using Microsoft.EntityFrameworkCore;
 using FCG.Domain.Entities;
 using FCG.Application.Contracts.Repositories;
 using FCG.Infrastructure.Data.Context;
-using FCG.Application.Common.Models;
+using FCG.Lib.Shared.Infrastructure.Data.Repositories;
 
 namespace FCG.Infrastructure.Data.Repositories;
 
-public class PromotionRepository(ApplicationDbContext context) : BaseRepository<Promotion>(context), IPromotionRepository
-{
+public class PromotionRepository(ApplicationDbContext context) 
+    : BaseRepository<Promotion, ApplicationDbContext>(context), IPromotionRepository {
+
     public async Task<Promotion?> GetByGameIdAsync(Guid gameId, CancellationToken cancellationToken = default)
     {
         return await _context.Promotions

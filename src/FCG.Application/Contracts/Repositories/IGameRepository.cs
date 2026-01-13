@@ -1,5 +1,6 @@
 using FCG.Domain.Entities;
-using FCG.Application.Common.Models;
+using FCG.Lib.Shared.Application.Common.Models;
+using FCG.Lib.Shared.Application.Contracts.Repositories;
 
 namespace FCG.Application.Contracts.Repositories;
 

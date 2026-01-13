@@ -1,3 +1,5 @@
+using FCG.Lib.Shared.Domain.Entities;
+
 namespace FCG.Domain.Entities;
 
 public class UserGame : BaseEntity

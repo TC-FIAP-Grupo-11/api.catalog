@@ -8,7 +8,7 @@ using FCG.Application.Commands.Games.DeactivateGame;
 using FCG.Application.Queries.Games.GetAllGames;
 using FCG.Application.Queries.Games.GetGameById;
 using FCG.Application.Queries.Games.GetActiveGames;
-using FCG.API.Extensions;
+using FCG.Lib.Shared.Application.Extensions;
 using FCG.API.Contracts.Responses;
 using FCG.API.Contracts.Requests;
 using FCG.Domain.Entities;

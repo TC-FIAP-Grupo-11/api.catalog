@@ -1,5 +1,5 @@
 using FCG.API;
-using FCG.API.Middlewares;
+using FCG.Lib.Shared.Infrastructure.Middlewares;
 using FCG.Infrastructure.Data.Context;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;

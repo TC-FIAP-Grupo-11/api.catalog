@@ -10,7 +10,7 @@ using FCG.Application.Commands.Auth.ResetPassword;
 using FCG.Application.Commands.Auth.ChangePassword;
 using FCG.Application.Commands.Auth.EnableUser;
 using FCG.Application.Commands.Auth.DisableUser;
-using FCG.API.Extensions;
+using FCG.Lib.Shared.Application.Extensions;
 using FCG.API.Contracts.Responses;
 using FCG.Application.Queries.Users.GetUserByEmail;
 

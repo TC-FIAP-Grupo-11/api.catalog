@@ -1,3 +1,5 @@
+using FCG.Lib.Shared.Domain.Entities;
+
 using FCG.Domain.Enumerations;
 
 namespace FCG.Domain.Entities;

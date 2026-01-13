@@ -1,5 +1,5 @@
-using FCG.Application.Common.Errors;
-using FCG.Application.Common.Models;
+using FCG.Lib.Shared.Application.Common.Errors;
+using FCG.Lib.Shared.Application.Common.Models;
 using FCG.Application.Contracts.Repositories;
 using FCG.Domain.Entities;
 using MediatR;

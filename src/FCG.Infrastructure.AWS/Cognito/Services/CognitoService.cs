@@ -7,7 +7,7 @@ using System.Text;
 using FCG.Domain.Entities;
 using FCG.Application.Contracts.Auth;
 using FCG.Application.Contracts.Auth.Responses;
-using FCG.Application.Common.Exceptions;
+using FCG.Lib.Shared.Application.Common.Exceptions;
 using CognitoInvalidPasswordException = Amazon.CognitoIdentityProvider.Model.InvalidPasswordException;
 
 namespace FCG.Infrastructure.AWS.Cognito.Services;
@@ -48,11 +48,11 @@ public class CognitoService(
         }
         catch (CognitoInvalidPasswordException ex)
         {
-            throw new Application.Common.Exceptions.InvalidPasswordException("Password does not meet security requirements", ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.InvalidPasswordException("Password does not meet security requirements", ex);
         }
         catch (TooManyRequestsException ex)
         {
-            throw new Application.Common.Exceptions.LimitExceededException("Too many sign up attempts. Please try again later", ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.LimitExceededException("Too many sign up attempts. Please try again later", ex);
         }
         catch (AmazonCognitoIdentityProviderException ex)
         {
@@ -85,7 +85,7 @@ public class CognitoService(
         }
         catch (Amazon.CognitoIdentityProvider.Model.UserNotFoundException ex)
         {
-            throw new Application.Common.Exceptions.UserNotFoundException(email, ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.UserNotFoundException(email, ex);
         }
         catch (AmazonCognitoIdentityProviderException ex)
         {
@@ -108,11 +108,11 @@ public class CognitoService(
         }
         catch (Amazon.CognitoIdentityProvider.Model.UserNotFoundException ex)
         {
-            throw new Application.Common.Exceptions.UserNotFoundException(email, ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.UserNotFoundException(email, ex);
         }
         catch (Amazon.CognitoIdentityProvider.Model.LimitExceededException ex)
         {
-            throw new Application.Common.Exceptions.LimitExceededException("Too many requests. Please try again later", ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.LimitExceededException("Too many requests. Please try again later", ex);
         }
         catch (AmazonCognitoIdentityProviderException ex)
         {
@@ -162,7 +162,7 @@ public class CognitoService(
         }
         catch (TooManyRequestsException ex)
         {
-            throw new Application.Common.Exceptions.LimitExceededException("Too many sign in attempts. Please try again later", ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.LimitExceededException("Too many sign in attempts. Please try again later", ex);
         }
         catch (AmazonCognitoIdentityProviderException ex)
         {
@@ -185,11 +185,11 @@ public class CognitoService(
         }
         catch (Amazon.CognitoIdentityProvider.Model.UserNotFoundException ex)
         {
-            throw new Application.Common.Exceptions.UserNotFoundException(email, ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.UserNotFoundException(email, ex);
         }
         catch (Amazon.CognitoIdentityProvider.Model.LimitExceededException ex)
         {
-            throw new Application.Common.Exceptions.LimitExceededException("Too many requests. Please try again later", ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.LimitExceededException("Too many requests. Please try again later", ex);
         }
         catch (AmazonCognitoIdentityProviderException ex)
         {
@@ -222,11 +222,11 @@ public class CognitoService(
         }
         catch (CognitoInvalidPasswordException ex)
         {
-            throw new Application.Common.Exceptions.InvalidPasswordException("Password does not meet security requirements", ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.InvalidPasswordException("Password does not meet security requirements", ex);
         }
         catch (Amazon.CognitoIdentityProvider.Model.UserNotFoundException ex)
         {
-            throw new Application.Common.Exceptions.UserNotFoundException(email, ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.UserNotFoundException(email, ex);
         }
         catch (AmazonCognitoIdentityProviderException ex)
         {
@@ -253,11 +253,11 @@ public class CognitoService(
         }
         catch (CognitoInvalidPasswordException ex)
         {
-            throw new Application.Common.Exceptions.InvalidPasswordException("New password does not meet security requirements", ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.InvalidPasswordException("New password does not meet security requirements", ex);
         }
         catch (Amazon.CognitoIdentityProvider.Model.LimitExceededException ex)
         {
-            throw new Application.Common.Exceptions.LimitExceededException("Too many requests. Please try again later", ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.LimitExceededException("Too many requests. Please try again later", ex);
         }
         catch (AmazonCognitoIdentityProviderException ex)
         {
@@ -279,7 +279,7 @@ public class CognitoService(
         }
         catch (Amazon.CognitoIdentityProvider.Model.UserNotFoundException ex)
         {
-            throw new Application.Common.Exceptions.UserNotFoundException(email, ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.UserNotFoundException(email, ex);
         }
         catch (AmazonCognitoIdentityProviderException ex)
         {
@@ -301,7 +301,7 @@ public class CognitoService(
         }
         catch (Amazon.CognitoIdentityProvider.Model.UserNotFoundException ex)
         {
-            throw new Application.Common.Exceptions.UserNotFoundException(email, ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.UserNotFoundException(email, ex);
         }
         catch (AmazonCognitoIdentityProviderException ex)
         {
@@ -351,7 +351,7 @@ public class CognitoService(
         }
         catch (Amazon.CognitoIdentityProvider.Model.UserNotFoundException ex)
         {
-            throw new Application.Common.Exceptions.UserNotFoundException(user.Email, ex);
+            throw new FCG.Lib.Shared.Application.Common.Exceptions.UserNotFoundException(user.Email, ex);
         }
         catch (AmazonCognitoIdentityProviderException ex)
         {

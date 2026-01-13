@@ -1,4 +1,5 @@
 using FCG.Domain.Entities;
+using FCG.Lib.Shared.Application.Contracts.Repositories;
 
 namespace FCG.Application.Contracts.Repositories;
 

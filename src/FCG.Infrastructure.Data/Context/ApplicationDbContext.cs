@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using FCG.Domain.Entities;
 using System.Reflection;
+using FCG.Lib.Shared.Domain.Entities;
 
 namespace FCG.Infrastructure.Data.Context;
 
