@@ -22,8 +22,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FCG.Application\FCG.Application.csproj" />
-    <ProjectReference Include="..\FCG.Infrastructure.AWS\FCG.Infrastructure.AWS.csproj" />
     <ProjectReference Include="..\FCG.Infrastructure.Data\FCG.Infrastructure.Data.csproj" />
+    <ProjectReference Include="..\FCG.Infrastructure.ExternalServices\FCG.Infrastructure.ExternalServices.csproj" />
   </ItemGroup>
 
 </Project>

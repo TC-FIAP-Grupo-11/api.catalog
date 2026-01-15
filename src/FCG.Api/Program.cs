@@ -4,11 +4,8 @@ using FCG.Infrastructure.Data.Context;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using FCG.Infrastructure.Data;
-using FCG.Infrastructure.AWS;
 using FCG.Application;
-using FCG.Infrastructure.Data.Seed;
-using FCG.Infrastructure.AWS.Seed;
-using FCG.Domain.Entities;
+using FCG.Infrastructure.ExternalServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,43 +21,21 @@ builder.Services.AddApplicationServices();
 // Infrastructure - Database and Repositories
 builder.Services.AddDatabaseInfrastructure(builder.Configuration);
 
-// Infrastructure - AWS
-builder.Services.AddAwsInfrastructure(builder.Configuration);
+// Infrastructure - External Services
+builder.Services.AddExternalServices(builder.Configuration);
 
 var app = builder.Build();
 
-// Database Migration and Seed
+// Database Migration
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
     var context = services.GetRequiredService<ApplicationDbContext>();
     
     if (app.Environment.IsDevelopment())
     {
         await context.Database.MigrateAsync();
     }
-    
-    // Seed admin user from environment variables
-    var adminEmail = builder.Configuration["Admin:Email"];
-    var adminPassword = builder.Configuration["Admin:Password"];
-    var adminName = "Administrator";
-
-    ArgumentException.ThrowIfNullOrEmpty(adminEmail, "Admin email is required for seeding");
-    ArgumentException.ThrowIfNullOrEmpty(adminPassword, "Admin password is required for seeding");
-
-    // Create admin user entity
-    var adminUser = User.CreateAdmin(adminName, adminEmail);
-    
-    // Seed Cognito (groups and admin user)
-    var cognitoSeeder = services.GetRequiredService<CognitoSeeder>();
-    var accountId = await cognitoSeeder.SeedAdminAsync(adminUser, adminPassword);
-
-    adminUser.SetAccountId(accountId);
-    
-    // Seed Database (admin user)
-    var databaseSeeder = services.GetRequiredService<DatabaseSeeder>();
-    await databaseSeeder.SeedAdminAsync(adminUser);
 }
 
 // Configure the HTTP request pipeline

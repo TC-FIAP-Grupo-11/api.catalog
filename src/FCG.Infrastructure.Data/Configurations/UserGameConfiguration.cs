@@ -25,11 +25,6 @@ public class UserGameConfiguration : IEntityTypeConfiguration<UserGame>
             .HasColumnType("decimal(18,2)")
             .IsRequired();
 
-        builder.HasOne(ug => ug.User)
-            .WithMany(u => u.UserGames)
-            .HasForeignKey(ug => ug.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         builder.HasOne(ug => ug.Game)
             .WithMany(g => g.UserGames)
             .HasForeignKey(ug => ug.GameId)

@@ -9,7 +9,6 @@ public class UserGame : BaseEntity
     public DateTime PurchaseDate { get; private set; }
     public decimal PurchasePrice { get; private set; }
 
-    public User User { get; private set; } = null!;
     public Game Game { get; private set; } = null!;
 
     private UserGame(Guid userId, Guid gameId, decimal purchasePrice)

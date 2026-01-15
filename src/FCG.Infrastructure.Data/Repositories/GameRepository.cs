@@ -52,7 +52,6 @@ public class GameRepository(ApplicationDbContext context)
     {
         return await _context.UserGames
             .Include(ug => ug.Game)
-            .Include(ug => ug.User)
             .FirstOrDefaultAsync(ug => ug.UserId == userId && ug.GameId == gameId, cancellationToken);
     }
 

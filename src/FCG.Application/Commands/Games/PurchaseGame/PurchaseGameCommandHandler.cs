@@ -1,6 +1,7 @@
 using FCG.Lib.Shared.Application.Common.Errors;
 using FCG.Lib.Shared.Application.Common.Models;
 using FCG.Application.Contracts.Repositories;
+using FCG.Application.Contracts.Users;
 using FCG.Domain.Entities;
 using MediatR;
 
@@ -8,17 +9,17 @@ namespace FCG.Application.Commands.Games.PurchaseGame;
 
 public class PurchaseGameCommandHandler(
     IGameRepository gameRepository,
-    IUserRepository userRepository,
+    IUserApiService userApiService,
     IPromotionRepository promotionRepository) : IRequestHandler<PurchaseGameCommand, Result<Guid>>
 {
     private readonly IGameRepository _gameRepository = gameRepository;
-    private readonly IUserRepository _userRepository = userRepository;
+    private readonly IUserApiService _userApiService = userApiService;
     private readonly IPromotionRepository _promotionRepository = promotionRepository;
 
     public async Task<Result<Guid>> Handle(PurchaseGameCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetByIdAsync(request.UserId, cancellationToken);
-        if (user is null)
+        var userExists = await _userApiService.ExistsAsync(request.UserId, cancellationToken);
+        if (!userExists)
             return Result.Failure<Guid>(ApplicationErrors.User.NotFound(request.UserId));
 
         var game = await _gameRepository.GetByIdAsync(request.GameId, cancellationToken);
