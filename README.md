@@ -1,11 +1,11 @@
-# FCG - FIAP Cloud Games
+# FCG API Catalog
 
 **Tech Challenge - Fase 1**  
-Plataforma de venda de jogos digitais e gestão de usuários.
+Plataforma de venda de jogos digitais.
 
 ## Sobre o Projeto
 
-A FIAP Cloud Games (FCG) é uma API REST desenvolvida em .NET 8 para gerenciar usuários, jogos e promoções. Este MVP implementa autenticação segura, cadastro de jogos e biblioteca pessoal de jogos adquiridos.
+A FCG API Catalog é uma API REST desenvolvida em .NET 8 para gerenciar jogos e promoções. Este MVP implementa catálogo de jogos e biblioteca pessoal de jogos adquiridos.
 
 
 ## Arquitetura

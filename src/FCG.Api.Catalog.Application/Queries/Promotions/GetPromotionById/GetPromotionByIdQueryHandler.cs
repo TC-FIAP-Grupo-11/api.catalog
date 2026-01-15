@@ -1,0 +1,22 @@
+using MediatR;
+using FCG.Api.Catalog.Application.Contracts.Repositories;
+using FCG.Lib.Shared.Application.Common.Models;
+using FCG.Lib.Shared.Application.Common.Errors;
+using FCG.Api.Catalog.Domain.Entities;
+
+namespace FCG.Api.Catalog.Application.Queries.Promotions.GetPromotionById;
+
+public class GetPromotionByIdQueryHandler(IPromotionRepository promotionRepository) : IRequestHandler<GetPromotionByIdQuery, Result<Promotion>>
+{
+    private readonly IPromotionRepository _promotionRepository = promotionRepository;
+
+    public async Task<Result<Promotion>> Handle(GetPromotionByIdQuery request, CancellationToken cancellationToken)
+    {
+        var promotion = await _promotionRepository.GetByIdAsync(request.PromotionId, cancellationToken);
+
+        if (promotion is null)
+            return Result.Failure<Promotion>(ApplicationErrors.Promotion.NotFound(request.PromotionId));
+
+        return Result.Success(promotion);
+    }
+}
