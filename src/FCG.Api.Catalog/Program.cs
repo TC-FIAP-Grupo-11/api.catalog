@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using FCG.Api.Catalog.Infrastructure.Data;
 using FCG.Api.Catalog.Application;
 using FCG.Api.Catalog.Infrastructure.ExternalServices;
+using FCG.Lib.Shared.Messaging.Configuration;
+using FCG.Api.Catalog.Application.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,12 @@ builder.Services.AddDatabaseInfrastructure(builder.Configuration);
 // Infrastructure - External Services
 builder.Services.AddExternalServices(builder.Configuration);
 
+// Messaging - Publisher and Consumer
+builder.Services.AddMessagingConsumers(builder.Configuration, consumers =>
+{
+    consumers.AddConsumer<PaymentProcessedEventConsumer>();
+});
+
 var app = builder.Build();
 
 // Database Migration
@@ -32,22 +40,15 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<ApplicationDbContext>();
     
-    if (app.Environment.IsDevelopment())
-    {
-        await context.Database.MigrateAsync();
-    }
+    await context.Database.MigrateAsync();
 }
 
-// Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "FCG API v1");
-        c.RoutePrefix = "swagger";
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FCG API v1");
+    c.RoutePrefix = "swagger";
+});
 
 app.UseMiddleware<ExceptionMiddleware>();
 
