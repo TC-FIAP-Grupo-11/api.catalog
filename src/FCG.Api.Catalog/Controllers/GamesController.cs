@@ -9,6 +9,7 @@ using FCG.Api.Catalog.Application.Queries.Games.GetAllGames;
 using FCG.Api.Catalog.Application.Queries.Games.GetGameById;
 using FCG.Api.Catalog.Application.Queries.Games.GetActiveGames;
 using FCG.Lib.Shared.Application.Extensions;
+using FCG.Lib.Shared.Application.Common.Models;
 using FCG.Api.Catalog.Contracts.Responses;
 using FCG.Api.Catalog.Contracts.Requests;
 using FCG.Api.Catalog.Domain.Entities;

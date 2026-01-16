@@ -6,6 +6,7 @@ using FCG.Api.Catalog.Application.Commands.Promotions.DeactivatePromotion;
 using FCG.Api.Catalog.Application.Queries.Promotions.GetAllPromotions;
 using FCG.Api.Catalog.Application.Queries.Promotions.GetPromotionById;
 using FCG.Lib.Shared.Application.Extensions;
+using FCG.Lib.Shared.Application.Common.Models;
 using FCG.Api.Catalog.Contracts.Responses;
 
 namespace FCG.Api.Catalog.Controllers;
