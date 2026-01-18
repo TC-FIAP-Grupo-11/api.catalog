@@ -10,6 +10,7 @@ public interface IGameRepository : IBaseRepository<Game>
     Task<PagedResult<Game>> GetActiveGamesPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default);
     Task<IEnumerable<Game>> GetByGenreAsync(string genre, CancellationToken cancellationToken = default);
     Task<UserGame?> GetByUserAndGameAsync(Guid userId, Guid gameId, CancellationToken cancellationToken = default);
+    Task<UserGame?> GetUserGameByOrderIdAsync(Guid orderId, CancellationToken cancellationToken = default);
     Task<PagedResult<UserGame>> GetUserGamesPagedAsync(Guid userId, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
     Task<bool> UserOwnsGameAsync(Guid userId, Guid gameId, CancellationToken cancellationToken = default);
     Task AddUserGameAsync(UserGame userGame, CancellationToken cancellationToken = default);

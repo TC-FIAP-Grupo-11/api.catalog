@@ -30,12 +30,11 @@ public class PromotionConfiguration : IEntityTypeConfiguration<Promotion>
             .HasDefaultValue(true);
 
         builder.HasOne(p => p.Game)
-            .WithOne(g => g.Promotion)
-            .HasForeignKey<Promotion>(p => p.GameId)
+            .WithMany(g => g.Promotions)
+            .HasForeignKey(p => p.GameId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(p => p.GameId)
-            .IsUnique()
             .HasDatabaseName("IX_Promotions_GameId");
 
         builder.HasIndex(p => p.IsActive)

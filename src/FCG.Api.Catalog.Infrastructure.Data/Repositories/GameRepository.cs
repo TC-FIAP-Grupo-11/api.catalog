@@ -55,6 +55,13 @@ public class GameRepository(ApplicationDbContext context)
             .FirstOrDefaultAsync(ug => ug.UserId == userId && ug.GameId == gameId, cancellationToken);
     }
 
+    public async Task<UserGame?> GetUserGameByOrderIdAsync(Guid orderId, CancellationToken cancellationToken = default)
+    {
+        return await _context.UserGames
+            .Include(ug => ug.Game)
+            .FirstOrDefaultAsync(ug => ug.OrderId == orderId, cancellationToken);
+    }
+
     public async Task<PagedResult<UserGame>> GetUserGamesPagedAsync(
         Guid userId, 
         int pageNumber, 
@@ -63,7 +70,7 @@ public class GameRepository(ApplicationDbContext context)
     {
         var query = _context.UserGames
             .Include(ug => ug.Game)
-            .Where(ug => ug.UserId == userId)
+            .Where(ug => ug.UserId == userId && ug.Status == UserGameStatus.Completed)
             .OrderByDescending(ug => ug.PurchaseDate);
 
         var totalCount = await query.CountAsync(cancellationToken);
@@ -79,7 +86,10 @@ public class GameRepository(ApplicationDbContext context)
     public async Task<bool> UserOwnsGameAsync(Guid userId, Guid gameId, CancellationToken cancellationToken = default)
     {
         return await _context.UserGames
-            .AnyAsync(ug => ug.UserId == userId && ug.GameId == gameId, cancellationToken);
+            .AnyAsync(ug => ug.UserId == userId 
+                         && ug.GameId == gameId 
+                         && (ug.Status == UserGameStatus.Completed || ug.Status == UserGameStatus.Pending), 
+                cancellationToken);
     }
 
     public async Task AddUserGameAsync(UserGame userGame, CancellationToken cancellationToken = default)

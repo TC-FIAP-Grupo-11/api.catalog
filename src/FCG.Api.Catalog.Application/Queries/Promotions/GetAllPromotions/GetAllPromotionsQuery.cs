@@ -6,4 +6,5 @@ namespace FCG.Api.Catalog.Application.Queries.Promotions.GetAllPromotions;
 
 public record GetAllPromotionsQuery(
     int PageNumber = 1,
-    int PageSize = 10) : IRequest<Result<PagedResult<Promotion>>>;
+    int PageSize = 10,
+    bool IncludeInactive = false) : IRequest<Result<PagedResult<Promotion>>>;

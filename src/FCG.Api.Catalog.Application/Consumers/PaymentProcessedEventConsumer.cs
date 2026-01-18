@@ -28,21 +28,33 @@ public class PaymentProcessedEventConsumer : IConsumer<PaymentProcessedEvent>
             evt.OrderId,
             evt.Status);
 
+        // Buscar UserGame pelo OrderId
+        var userGame = await _gameRepository.GetUserGameByOrderIdAsync(evt.OrderId);
+        
+        if (userGame is null)
+        {
+            _logger.LogWarning(
+                "UserGame não encontrado para o pedido {OrderId}",
+                evt.OrderId);
+            return;
+        }
+
         if (evt.Status == PaymentStatus.Approved)
         {
-            // Adicionar jogo à biblioteca do usuário
-            var userGame = UserGame.Create(evt.UserId, evt.GameId, 0); // Preço já foi processado
-            
-            await _gameRepository.AddUserGameAsync(userGame);
+            userGame.Complete();
             await _gameRepository.SaveChangesAsync();
 
             _logger.LogInformation(
-                "Jogo {GameId} adicionado à biblioteca do usuário {UserId}",
+                "Pedido {OrderId} confirmado - Jogo {GameId} adicionado à biblioteca do usuário {UserId}",
+                evt.OrderId,
                 evt.GameId,
                 evt.UserId);
         }
         else
         {
+            userGame.Fail();
+            await _gameRepository.SaveChangesAsync();
+
             _logger.LogWarning(
                 "Pagamento rejeitado para pedido {OrderId}: {Message}",
                 evt.OrderId,

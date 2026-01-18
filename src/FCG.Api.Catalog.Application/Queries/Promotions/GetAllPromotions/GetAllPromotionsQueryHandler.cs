@@ -14,6 +14,7 @@ public class GetAllPromotionsQueryHandler(IPromotionRepository promotionReposito
         var pagedResult = await _promotionRepository.GetAllPagedAsync(
             request.PageNumber,
             request.PageSize,
+            request.IncludeInactive,
             cancellationToken);
 
         return Result.Success(pagedResult);

@@ -15,7 +15,8 @@ public class Game : BaseEntity
     private readonly List<UserGame> _userGames = new();
     public IReadOnlyCollection<UserGame> UserGames => _userGames.AsReadOnly();
     
-    public Promotion? Promotion { get; private set; }
+    private readonly List<Promotion> _promotions = new();
+    public IReadOnlyCollection<Promotion> Promotions => _promotions.AsReadOnly();
 
     private Game(
         string title,

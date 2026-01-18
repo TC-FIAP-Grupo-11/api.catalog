@@ -4,6 +4,7 @@ using FCG.Api.Catalog.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FCG.Api.Catalog.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260118124717_RemoveUserEntity")]
+    partial class RemoveUserEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,6 +111,7 @@ namespace FCG.Api.Catalog.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GameId")
+                        .IsUnique()
                         .HasDatabaseName("IX_Promotions_GameId");
 
                     b.HasIndex("IsActive")
@@ -131,19 +135,11 @@ namespace FCG.Api.Catalog.Infrastructure.Data.Migrations
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("PurchasePrice")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -156,10 +152,6 @@ namespace FCG.Api.Catalog.Infrastructure.Data.Migrations
                     b.HasIndex("GameId")
                         .HasDatabaseName("IX_UserGames_GameId");
 
-                    b.HasIndex("OrderId")
-                        .IsUnique()
-                        .HasDatabaseName("IX_UserGames_OrderId");
-
                     b.HasIndex("PurchaseDate")
                         .HasDatabaseName("IX_UserGames_PurchaseDate");
 
@@ -167,6 +159,7 @@ namespace FCG.Api.Catalog.Infrastructure.Data.Migrations
                         .HasDatabaseName("IX_UserGames_UserId");
 
                     b.HasIndex("UserId", "GameId")
+                        .IsUnique()
                         .HasDatabaseName("IX_UserGames_UserId_GameId");
 
                     b.ToTable("UserGames", (string)null);
@@ -175,8 +168,8 @@ namespace FCG.Api.Catalog.Infrastructure.Data.Migrations
             modelBuilder.Entity("FCG.Api.Catalog.Domain.Entities.Promotion", b =>
                 {
                     b.HasOne("FCG.Api.Catalog.Domain.Entities.Game", "Game")
-                        .WithMany("Promotions")
-                        .HasForeignKey("GameId")
+                        .WithOne("Promotion")
+                        .HasForeignKey("FCG.Api.Catalog.Domain.Entities.Promotion", "GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -196,7 +189,7 @@ namespace FCG.Api.Catalog.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("FCG.Api.Catalog.Domain.Entities.Game", b =>
                 {
-                    b.Navigation("Promotions");
+                    b.Navigation("Promotion");
 
                     b.Navigation("UserGames");
                 });

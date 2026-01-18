@@ -30,19 +30,19 @@ public class GamesController(IMediator mediator) : ControllerBase
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetGames(
-        [FromQuery] bool active = true, 
+        [FromQuery] bool includeInactive = false, 
         [FromQuery] int pageNumber = 1, 
         [FromQuery] int pageSize = 10)
     {
-        // Se active for false, requer privilégio de admin
-        if (!active && !User.IsInRole("Admin"))
+        if (includeInactive && !User.HasClaim("cognito:groups", "Admin"))
         {
-            return Forbid();
+            return StatusCode(StatusCodes.Status403Forbidden, 
+                new { message = "Only administrators can view inactive games." });
         }
 
-        var result = active
-            ? await _mediator.Send(new GetActiveGamesQuery(pageNumber, pageSize))
-            : await _mediator.Send(new GetAllGamesQuery(pageNumber, pageSize));
+        var result = includeInactive
+            ? await _mediator.Send(new GetAllGamesQuery(pageNumber, pageSize))
+            : await _mediator.Send(new GetActiveGamesQuery(pageNumber, pageSize));
 
         return result.ToActionResult();
     }
@@ -124,19 +124,19 @@ public class GamesController(IMediator mediator) : ControllerBase
         return Ok(new { message = "Game updated successfully." });
     }
 
-    [HttpGet("user/{userId:guid}")]
+    [HttpGet("user/{email}")]
     [ProducesResponseType(typeof(UserGamePagedResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetUserGames(
-        [FromRoute] Guid userId,
+        [FromRoute] string email,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
         if (pageSize > 100) pageSize = 100;
         if (pageNumber < 1) pageNumber = 1;
 
-        var query = new GetUserGamesQuery(userId, pageNumber, pageSize);
+        var query = new GetUserGamesQuery(email, pageNumber, pageSize);
         var result = await _mediator.Send(query);
 
         if (result.IsFailure)
@@ -168,17 +168,17 @@ public class GamesController(IMediator mediator) : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost("user/{userId:guid}/purchase")]
+    [HttpPost("user/{email}/purchase")]
     [ProducesResponseType(typeof(PurchaseGameResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> PurchaseGame(
-        [FromRoute] Guid userId,
+        [FromRoute] string email,
         [FromBody] PurchaseGameRequest request)
     {
-        var command = new PurchaseGameCommand(userId, request.GameId);
+        var command = new PurchaseGameCommand(email, request.GameId);
         var result = await _mediator.Send(command);
 
         if (result.IsFailure)
@@ -186,12 +186,12 @@ public class GamesController(IMediator mediator) : ControllerBase
 
         var response = new PurchaseGameResponse(
             result.Value,
-            "Game successfully added to your library"
+            "Purchase order created successfully. The game will be added to your library after payment confirmation."
         );
 
         return CreatedAtAction(
             nameof(GetUserGames),
-            new { userId },
+            new { email },
             response);
     }
 }

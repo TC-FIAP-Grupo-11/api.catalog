@@ -30,7 +30,7 @@ builder.Services.AddExternalServices(builder.Configuration);
 builder.Services.AddMessagingConsumers(builder.Configuration, consumers =>
 {
     consumers.AddConsumer<PaymentProcessedEventConsumer>();
-});
+}, "catalog");
 
 var app = builder.Build();
 

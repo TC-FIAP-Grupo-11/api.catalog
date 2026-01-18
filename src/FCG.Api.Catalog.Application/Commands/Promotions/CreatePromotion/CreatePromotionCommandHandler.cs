@@ -21,10 +21,6 @@ public class CreatePromotionCommandHandler(
             if (game is null)
                 return Result.Failure<Guid>(ApplicationErrors.Game.NotFound(request.GameId));
 
-            var hasActivePromotion = await _promotionRepository.GameHasActivePromotionAsync(request.GameId, cancellationToken);
-            if (hasActivePromotion)
-                return Result.Failure<Guid>(ApplicationErrors.Promotion.GameAlreadyHasPromotion);
-
             var promotion = Promotion.Create(
                 request.GameId,
                 request.DiscountPercentage,

@@ -16,12 +16,12 @@ public class GetUserGamesQueryHandler(
 
     public async Task<Result<PagedResult<UserGame>>> Handle(GetUserGamesQuery request, CancellationToken cancellationToken)
     {
-        var userExists = await _userApiService.ExistsAsync(request.UserId, cancellationToken);
-        if (!userExists)
-            return Result.Failure<PagedResult<UserGame>>(ApplicationErrors.User.NotFound(request.UserId));
+        var user = await _userApiService.GetByEmailAsync(request.Email, cancellationToken);
+        if (user is null)
+            return Result.Failure<PagedResult<UserGame>>(ApplicationErrors.User.NotFound(request.Email));
 
         var pagedResult = await _gameRepository.GetUserGamesPagedAsync(
-            request.UserId,
+            user.Id,
             request.PageNumber,
             request.PageSize,
             cancellationToken);

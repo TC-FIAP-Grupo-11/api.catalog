@@ -10,18 +10,28 @@ namespace FCG.Api.Catalog.Infrastructure.Data.Repositories;
 public class PromotionRepository(ApplicationDbContext context) 
     : BaseRepository<Promotion, ApplicationDbContext>(context), IPromotionRepository {
 
-    public async Task<Promotion?> GetByGameIdAsync(Guid gameId, CancellationToken cancellationToken = default)
+    public async Task<List<Promotion>> GetActivePromotionsByGameIdAsync(Guid gameId, CancellationToken cancellationToken = default)
     {
+        var now = DateTime.UtcNow;
         return await _context.Promotions
             .Include(p => p.Game)
-            .FirstOrDefaultAsync(p => p.GameId == gameId, cancellationToken);
+            .Where(p => p.GameId == gameId && p.IsActive && p.StartDate <= now && p.EndDate >= now)
+            .OrderByDescending(p => p.DiscountPercentage)
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<PagedResult<Promotion>> GetAllPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    public async Task<PagedResult<Promotion>> GetAllPagedAsync(int pageNumber, int pageSize, bool includeInactive, CancellationToken cancellationToken = default)
     {
         var query = _context.Promotions
             .Include(p => p.Game)
-            .OrderByDescending(p => p.CreatedAt);
+            .AsQueryable();
+
+        if (!includeInactive)
+        {
+            query = query.Where(p => p.IsActive);
+        }
+
+        query = query.OrderByDescending(p => p.CreatedAt);
 
         var totalCount = await query.CountAsync(cancellationToken);
 

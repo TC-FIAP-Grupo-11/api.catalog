@@ -19,17 +19,22 @@ public class PromotionsController(IMediator mediator) : ControllerBase
     private readonly IMediator _mediator = mediator;
 
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(PromotionPagedResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> GetAll(
+        [FromQuery] bool includeInactive = false,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 10)
     {
-        if (pageSize > 100) pageSize = 100;
-        if (pageNumber < 1) pageNumber = 1;
+        if (includeInactive && !User.HasClaim("cognito:groups", "Admin"))
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, 
+                new { message = "Only administrators can view inactive promotions." });
+        }
 
-        var query = new GetAllPromotionsQuery(pageNumber, pageSize);
+        var query = new GetAllPromotionsQuery(pageNumber, pageSize, includeInactive);
         var result = await _mediator.Send(query);
 
         if (result.IsFailure)
@@ -62,6 +67,7 @@ public class PromotionsController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(PromotionItemResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status401Unauthorized)]

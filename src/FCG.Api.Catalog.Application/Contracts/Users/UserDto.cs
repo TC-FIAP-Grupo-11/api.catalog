@@ -7,6 +7,13 @@ public record UserDto(
     Guid Id,
     string Name,
     string Email,
-    string Role,
-    DateTime CreatedAt
+    RoleDto Role,
+    string? AccountId,
+    DateTime CreatedAt,
+    DateTime UpdatedAt
+);
+
+public record RoleDto(
+    int Id,
+    string Name
 );

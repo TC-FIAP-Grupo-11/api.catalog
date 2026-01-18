@@ -62,4 +62,21 @@ public class Promotion : BaseEntity
         var discount = originalPrice * (DiscountPercentage / 100);
         return originalPrice - discount;
     }
+
+    public static decimal CalculateAccumulatedDiscount(IEnumerable<Promotion> promotions, decimal originalPrice)
+    {
+        var validPromotions = promotions.Where(p => p.IsValid()).ToList();
+        
+        if (validPromotions.Count == 0)
+            return originalPrice;
+
+        decimal totalDiscountPercentage = validPromotions.Sum(p => p.DiscountPercentage);
+        
+        // Limitar desconto a 100%
+        if (totalDiscountPercentage > 100)
+            totalDiscountPercentage = 100;
+
+        var discount = originalPrice * (totalDiscountPercentage / 100);
+        return Math.Max(0, originalPrice - discount);
+    }
 }

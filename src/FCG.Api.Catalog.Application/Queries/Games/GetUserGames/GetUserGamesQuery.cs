@@ -5,6 +5,6 @@ using MediatR;
 namespace FCG.Api.Catalog.Application.Queries.Games.GetUserGames;
 
 public record GetUserGamesQuery(
-    Guid UserId, 
+    string Email, 
     int PageNumber = 1, 
     int PageSize = 10) : IRequest<Result<PagedResult<UserGame>>>;

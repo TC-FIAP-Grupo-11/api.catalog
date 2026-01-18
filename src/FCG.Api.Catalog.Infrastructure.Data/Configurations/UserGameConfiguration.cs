@@ -18,6 +18,9 @@ public class UserGameConfiguration : IEntityTypeConfiguration<UserGame>
         builder.Property(ug => ug.GameId)
             .IsRequired();
 
+        builder.Property(ug => ug.OrderId)
+            .IsRequired();
+
         builder.Property(ug => ug.PurchaseDate)
             .IsRequired();
 
@@ -25,13 +28,21 @@ public class UserGameConfiguration : IEntityTypeConfiguration<UserGame>
             .HasColumnType("decimal(18,2)")
             .IsRequired();
 
+        builder.Property(ug => ug.Status)
+            .IsRequired()
+            .HasConversion<int>()
+            .HasDefaultValue(UserGameStatus.Pending);
+
         builder.HasOne(ug => ug.Game)
             .WithMany(g => g.UserGames)
             .HasForeignKey(ug => ug.GameId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(ug => new { ug.UserId, ug.GameId })
+        builder.HasIndex(ug => ug.OrderId)
             .IsUnique()
+            .HasDatabaseName("IX_UserGames_OrderId");
+
+        builder.HasIndex(ug => new { ug.UserId, ug.GameId })
             .HasDatabaseName("IX_UserGames_UserId_GameId");
 
         builder.HasIndex(ug => ug.UserId)

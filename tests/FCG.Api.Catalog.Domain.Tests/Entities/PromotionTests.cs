@@ -67,4 +67,74 @@ public class PromotionTests
         // Then (Então)
         discountedPrice.Should().Be(100m);
     }
+
+    [Fact]
+    public void GivenMultipleActivePromotions_WhenCalculatingAccumulatedDiscount_ThenShouldSumDiscounts()
+    {
+        // Given (Dado)
+        var gameId = Guid.NewGuid();
+        var promotions = new List<Promotion>
+        {
+            Promotion.Create(gameId, 20m, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow.AddDays(7)),
+            Promotion.Create(gameId, 15m, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow.AddDays(7)),
+            Promotion.Create(gameId, 10m, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow.AddDays(7))
+        };
+
+        // When (Quando)
+        var discountedPrice = Promotion.CalculateAccumulatedDiscount(promotions, 100m);
+
+        // Then (Então) - 20% + 15% + 10% = 45% de desconto
+        discountedPrice.Should().Be(55m);
+    }
+
+    [Fact]
+    public void GivenPromotionsExceeding100Percent_WhenCalculatingAccumulatedDiscount_ThenShouldCapAt100Percent()
+    {
+        // Given (Dado)
+        var gameId = Guid.NewGuid();
+        var promotions = new List<Promotion>
+        {
+            Promotion.Create(gameId, 50m, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow.AddDays(7)),
+            Promotion.Create(gameId, 40m, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow.AddDays(7)),
+            Promotion.Create(gameId, 30m, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow.AddDays(7))
+        };
+
+        // When (Quando)
+        var discountedPrice = Promotion.CalculateAccumulatedDiscount(promotions, 100m);
+
+        // Then (Então) - Limitado a 100% = preço 0
+        discountedPrice.Should().Be(0m);
+    }
+
+    [Fact]
+    public void GivenMixOfActiveAndInactivePromotions_WhenCalculatingAccumulatedDiscount_ThenShouldOnlyUseActive()
+    {
+        // Given (Dado)
+        var gameId = Guid.NewGuid();
+        var activePromotion1 = Promotion.Create(gameId, 20m, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow.AddDays(7));
+        var inactivePromotion = Promotion.Create(gameId, 30m, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow.AddDays(7));
+        inactivePromotion.Deactivate();
+        var activePromotion2 = Promotion.Create(gameId, 15m, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow.AddDays(7));
+
+        var promotions = new List<Promotion> { activePromotion1, inactivePromotion, activePromotion2 };
+
+        // When (Quando)
+        var discountedPrice = Promotion.CalculateAccumulatedDiscount(promotions, 100m);
+
+        // Then (Então) - Apenas 20% + 15% = 35% de desconto
+        discountedPrice.Should().Be(65m);
+    }
+
+    [Fact]
+    public void GivenNoPromotions_WhenCalculatingAccumulatedDiscount_ThenShouldReturnOriginalPrice()
+    {
+        // Given (Dado)
+        var promotions = new List<Promotion>();
+
+        // When (Quando)
+        var discountedPrice = Promotion.CalculateAccumulatedDiscount(promotions, 100m);
+
+        // Then (Então)
+        discountedPrice.Should().Be(100m);
+    }
 }
