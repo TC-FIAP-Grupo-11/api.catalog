@@ -1,11 +1,14 @@
 # FCG API Catalog
 
-**Tech Challenge - Fase 1**  
+**Tech Challenge - Fase 2**  
 Plataforma de venda de jogos digitais.
 
 ## Sobre o Projeto
 
-A FCG API Catalog é uma API REST desenvolvida em .NET 8 para gerenciar jogos e promoções. Este MVP implementa catálogo de jogos e biblioteca pessoal de jogos adquiridos.
+A FCG API Catalog é uma API REST desenvolvida em .NET 8 para gerenciar jogos e promoções. Este projeto implementa catálogo de jogos e biblioteca pessoal de jogos adquiridos.
+
+> **⚠️ Este microsserviço faz parte de um sistema maior.**  
+> Para executar toda a plataforma (Docker Compose ou Kubernetes), veja: [FCG.Infra.Orchestration](../FCG.Infra.Orchestration/README.md)
 
 
 ## Arquitetura
@@ -13,11 +16,11 @@ A FCG API Catalog é uma API REST desenvolvida em .NET 8 para gerenciar jogos e 
 O projeto segue **Clean Architecture** com as seguintes camadas:
 
 ```
-├── FCG.Api/                # Controllers, Middlewares
-├── FCG.Application/        # Commands, Queries (CQRS)
-├── FCG.Domain/            # Entidades, Regras de Negócio
-├── FCG.Infrastructure.Data/    # EF Core, Repositories
-└── FCG.Infrastructure.AWS/     # AWS Cognito
+├── FCG.Api.Catalog/                    # Controllers, Middlewares
+├── FCG.Api.Catalog.Application/        # Commands, Queries (CQRS)
+├── FCG.Api.Catalog.Domain/             # Entidades, Regras de Negócio
+├── FCG.Api.Catalog.Infrastructure.Data/    # EF Core, Repositories
+└── FCG.Api.Catalog.Infrastructure.ExternalServices/     # Apis
 ```
 
 ### Padrões Utilizados
@@ -45,58 +48,38 @@ Sistema de autenticação via **AWS Cognito** com JWT Bearer:
 - MediatR + FluentValidation
 - xUnit + FluentAssertions
 
+## Variáveis de Ambiente
+
+```bash
+# Banco de Dados
+ConnectionStrings__DefaultConnection="Server=localhost,1433;Database=FCG_Catalog;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
+
+# JWT
+Authentication__JwtBearer__Authority="https://cognito-idp.<REGION>.amazonaws.com/<USER_POOL_ID>"
+
+# RabbitMQ
+Messaging__RabbitMQ__Host="localhost"
+Messaging__RabbitMQ__Username="guest"
+Messaging__RabbitMQ__Password="guest"
+```
+
 ## Como Executar
 
-### Pré-requisitos
-- .NET 8 SDK
-- SQL Server
-- Conta AWS (Cognito configurado)
-
-### Configuração
-
-1. **Configure o `appsettings.json`**:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=FCGDB;..."
-  },
-  "AWS": {
-    "Region": "us-east-1",
-    "Cognito": {
-      "UserPoolId": "us-east-1_XXX",
-      "ClientId": "xxx",
-      "ClientSecret": "xxx"
-    }
-  }
-}
-```
-
-2. **Configure variáveis de ambiente** (Admin seed):
+### Localmente
 ```bash
-export Admin__Email="admin@fcg.com"
-export Admin__Password="Admin@123"
+cd src/FCG.Api.Catalog
+dotnet run
 ```
 
-3. **Aplique as migrations**:
+Acesse: http://localhost:5002/swagger
+
+### Docker
 ```bash
-dotnet ef database update --project src/FCG.Infrastructure.Data
+docker build -t fcg-catalog .
+docker run -p 5002:80 fcg-catalog
 ```
-
-4. **Execute o projeto**:
-```bash
-dotnet run --project src/FCG.Api
-```
-
-5. **Acesse o Swagger**: `http://localhost:5005/swagger`
 
 ## Funcionalidades
-
-### Usuários
-- Cadastro com validações (email, senha segura)
-- Autenticação JWT
-- Confirmação de email
-- Recuperação de senha
-- Ativação/Desativação (Admin)
 
 ### Jogos
 - Cadastro de jogos (Admin)
@@ -113,7 +96,6 @@ dotnet run --project src/FCG.Api
 ## Estrutura do Banco
 
 **Entidades principais:**
-- `Users` - Usuários do sistema
 - `Games` - Catálogo de jogos
 - `UserGames` - Biblioteca (relacionamento N:N)
 - `Promotions` - Descontos em jogos

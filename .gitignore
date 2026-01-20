@@ -6,6 +6,9 @@
 # dotenv files
 .env
 
+# Kubernetes secrets
+k8s/secret.yaml
+
 # NuGet config with credentials
 nuget.config
 

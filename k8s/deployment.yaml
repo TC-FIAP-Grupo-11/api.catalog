@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-api
+  namespace: default
+  labels:
+    app: catalog-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: catalog-api
+  template:
+    metadata:
+      labels:
+        app: catalog-api
+    spec:
+      containers:
+      - name: catalog-api
+        image: fcg-catalog-api:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 80
+          name: http
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: catalog-api-config
+              key: ASPNETCORE_ENVIRONMENT
+        - name: ASPNETCORE_URLS
+          valueFrom:
+            configMapKeyRef:
+              name: catalog-api-config
+              key: ASPNETCORE_URLS
+        - name: ConnectionStrings__DefaultConnection
+          valueFrom:
+            secretKeyRef:
+              name: catalog-api-secret
+              key: CONNECTION_STRING
+        - name: Authentication__JwtBearer__Authority
+          valueFrom:
+            secretKeyRef:
+              name: catalog-api-secret
+              key: JWT_AUTHORITY
+        - name: Messaging__RabbitMQ__Host
+          valueFrom:
+            configMapKeyRef:
+              name: catalog-api-config
+              key: RABBITMQ_HOST
+        - name: Messaging__RabbitMQ__Username
+          valueFrom:
+            configMapKeyRef:
+              name: catalog-api-config
+              key: RABBITMQ_USERNAME
+        - name: Messaging__RabbitMQ__Password
+          valueFrom:
+            configMapKeyRef:
+              name: catalog-api-config
+              key: RABBITMQ_PASSWORD
+        - name: ExternalServices__UserApi__BaseUrl
+          valueFrom:
+            configMapKeyRef:
+              name: catalog-api-config
+              key: USERS_API_URL
+        - name: ExternalServices__UserApi__TimeoutSeconds
+          valueFrom:
+            configMapKeyRef:
+              name: catalog-api-config
+              key: USERS_API_TIMEOUT
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 15

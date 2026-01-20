@@ -64,4 +64,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "catalog-api" }));
+
 app.Run();
