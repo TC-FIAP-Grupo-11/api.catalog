@@ -47,7 +47,7 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FCG API v1");
+    c.SwaggerEndpoint("v1/swagger.json", "FCG API v1");
     c.RoutePrefix = "swagger";
 });
 
