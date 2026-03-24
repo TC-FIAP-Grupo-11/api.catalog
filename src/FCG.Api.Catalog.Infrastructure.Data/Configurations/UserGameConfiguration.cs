@@ -8,7 +8,7 @@ public class UserGameConfiguration : IEntityTypeConfiguration<UserGame>
 {
     public void Configure(EntityTypeBuilder<UserGame> builder)
     {
-        builder.ToTable("UserGames");
+        builder.ToTable("UserGames", tb => tb.IsTemporal());
 
         builder.HasKey(ug => ug.Id);
 

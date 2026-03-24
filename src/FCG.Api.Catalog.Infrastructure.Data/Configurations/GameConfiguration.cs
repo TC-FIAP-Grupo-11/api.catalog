@@ -8,7 +8,7 @@ public class GameConfiguration : IEntityTypeConfiguration<Game>
 {
     public void Configure(EntityTypeBuilder<Game> builder)
     {
-        builder.ToTable("Games");
+        builder.ToTable("Games", tb => tb.IsTemporal());
 
         builder.HasKey(g => g.Id);
 

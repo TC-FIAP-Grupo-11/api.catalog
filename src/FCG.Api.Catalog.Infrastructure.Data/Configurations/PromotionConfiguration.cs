@@ -8,7 +8,7 @@ public class PromotionConfiguration : IEntityTypeConfiguration<Promotion>
 {
     public void Configure(EntityTypeBuilder<Promotion> builder)
     {
-        builder.ToTable("Promotions");
+        builder.ToTable("Promotions", tb => tb.IsTemporal());
 
         builder.HasKey(p => p.Id);
 

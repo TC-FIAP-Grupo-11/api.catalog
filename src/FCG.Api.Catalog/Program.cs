@@ -1,5 +1,6 @@
 using FCG.Api.Catalog;
 using FCG.Lib.Shared.Infrastructure.Middlewares;
+using Amazon.XRay.Recorder.Handlers.AspNetCore;
 using FCG.Api.Catalog.Infrastructure.Data.Context;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,7 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
+app.UseXRay("fcg-catalog-api");
 app.UseMiddleware<ExceptionMiddleware>();
 
 if (!app.Environment.IsDevelopment())

@@ -1,6 +1,6 @@
 # FCG API Catalog
 
-**Tech Challenge - Fase 2**  
+**Tech Challenge - Fase 3**
 Plataforma de venda de jogos digitais.
 
 ## Sobre o Projeto
@@ -115,3 +115,28 @@ dotnet test
 
 Testes implementados em:
 - `FCG.Domain.Tests` - Entidades e regras de negócio
+
+---
+
+## Fase 3 — Novidades
+
+### Temporal Tables
+`Games`, `UserGames` e `Promotions` usam `IsTemporal()` via EF Core — o SQL Server mantém histórico automático das alterações em tabelas `*History`.
+
+### Observabilidade
+- **AWS X-Ray**: middleware `app.UseXRay("fcg-catalog-api")` habilitado — rastreamento distribuído via CloudWatch
+
+### CI/CD (GitHub Actions)
+- **CI** (`.github/workflows/ci.yml`): build + testes em push/PR na `main`
+- **CD** (`.github/workflows/cd.yml`): build Docker → push ECR → `kubectl set image` no EKS
+
+**Secrets obrigatórios no repositório GitHub:**
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+
+### Kubernetes
+Manifests em `k8s/`:
+- `deployment.yaml` — Deployment com 2 réplicas
+- `service.yaml` — Service NLB interno (integrado ao AWS API Gateway via VPC Link)
+- `configmap.yaml` — Variáveis não sensíveis
+- `secret.yaml` — Connection string, Cognito
