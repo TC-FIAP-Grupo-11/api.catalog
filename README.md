@@ -9,7 +9,7 @@ A FCG API Catalog é uma API REST desenvolvida em .NET 8 para gerenciar jogos e 
 
 > **⚠️ Este microsserviço faz parte de um sistema maior.**  
 > Para executar toda a plataforma (Docker Compose ou Kubernetes), veja: [FCG.Infra.Orchestration](../FCG.Infra.Orchestration/README.md)
-
+ 
 
 ## Arquitetura
 
