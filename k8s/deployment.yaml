@@ -78,6 +78,16 @@ spec:
             secretKeyRef:
               name: catalog-api-secret
               key: REDIS_CONNECTION_STRING
+        - name: MongoDB__ConnectionString
+          valueFrom:
+            secretKeyRef:
+              name: catalog-api-secret
+              key: MONGODB_CONNECTION_STRING
+        - name: MongoDB__DatabaseName
+          valueFrom:
+            configMapKeyRef:
+              name: catalog-api-config
+              key: MONGODB_DATABASE_NAME
         - name: NEW_RELIC_LICENSE_KEY
           valueFrom:
             secretKeyRef:

@@ -13,3 +13,4 @@ data:
   USERS_API_TIMEOUT: "30"
   SWAGGER_BASE_PATH: "/catalog"
   NEW_RELIC_APP_NAME: "fcg-catalog-api"
+  MONGODB_DATABASE_NAME: "fcg_catalog"
