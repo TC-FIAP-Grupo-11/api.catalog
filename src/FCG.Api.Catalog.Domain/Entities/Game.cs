@@ -35,6 +35,29 @@ public class Game : BaseEntity
         IsActive = true;
     }
 
+    private Game(
+        Guid id, string title, string description, string genre,
+        decimal price, DateTime releaseDate, string publisher, bool isActive,
+        DateTime createdAt, DateTime updatedAt)
+    {
+        Id = id;
+        Title = title;
+        Description = description;
+        Genre = genre;
+        Price = price;
+        ReleaseDate = releaseDate;
+        Publisher = publisher;
+        IsActive = isActive;
+        CreatedAt = createdAt;
+        UpdatedAt = updatedAt;
+    }
+
+    public static Game Reconstitute(
+        Guid id, string title, string description, string genre,
+        decimal price, DateTime releaseDate, string publisher, bool isActive,
+        DateTime createdAt, DateTime updatedAt)
+        => new(id, title, description, genre, price, releaseDate, publisher, isActive, createdAt, updatedAt);
+
     public static Game Create(
         string title,
         string description,

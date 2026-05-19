@@ -73,6 +73,11 @@ spec:
             configMapKeyRef:
               name: catalog-api-config
               key: SWAGGER_BASE_PATH
+        - name: Redis__ConnectionString
+          valueFrom:
+            secretKeyRef:
+              name: catalog-api-secret
+              key: REDIS_CONNECTION_STRING
         - name: NEW_RELIC_LICENSE_KEY
           valueFrom:
             secretKeyRef:

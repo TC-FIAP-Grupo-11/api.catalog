@@ -1,19 +1,20 @@
 using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
+using FCG.Api.Catalog.Application.Cache;
 using FCG.Api.Catalog.Application.Contracts.Repositories;
 using FCG.Lib.Shared.Application.Common.Models;
 using FCG.Lib.Shared.Application.Common.Errors;
 
 namespace FCG.Api.Catalog.Application.Commands.Games.UpdateGame;
 
-public class UpdateGameCommandHandler(IGameRepository gameRepository) : IRequestHandler<UpdateGameCommand, Result>
+public class UpdateGameCommandHandler(IGameRepository gameRepository, IDistributedCache cache)
+    : IRequestHandler<UpdateGameCommand, Result>
 {
-    private readonly IGameRepository _gameRepository = gameRepository;
-
     public async Task<Result> Handle(UpdateGameCommand request, CancellationToken cancellationToken)
     {
         try
         {
-            var game = await _gameRepository.GetByIdAsync(request.Id, cancellationToken);
+            var game = await gameRepository.GetByIdAsync(request.Id, cancellationToken);
 
             if (game is null)
                 return Result.Failure(ApplicationErrors.Game.NotFound(request.Id));
@@ -27,7 +28,8 @@ public class UpdateGameCommandHandler(IGameRepository gameRepository) : IRequest
                 request.Publisher
             );
 
-            await _gameRepository.UpdateAsync(game, cancellationToken);
+            await gameRepository.UpdateAsync(game, cancellationToken);
+            await InvalidateCacheAsync(cancellationToken);
 
             return Result.Success();
         }
@@ -39,5 +41,11 @@ public class UpdateGameCommandHandler(IGameRepository gameRepository) : IRequest
         {
             return Result.Failure(ApplicationErrors.Game.UpdateFailed);
         }
+    }
+
+    private async Task InvalidateCacheAsync(CancellationToken cancellationToken)
+    {
+        foreach (var key in CacheKeys.GamesInvalidationKeys())
+            await cache.RemoveAsync(key, cancellationToken);
     }
 }

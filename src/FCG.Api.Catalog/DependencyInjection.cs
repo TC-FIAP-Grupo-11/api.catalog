@@ -9,6 +9,16 @@ public static class DependencyInjection
     {
         services.AddControllers();
 
+        var redisConnectionString = configuration["Redis:ConnectionString"];
+        if (!string.IsNullOrEmpty(redisConnectionString))
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConnectionString;
+                options.InstanceName = "fcg-catalog:";
+            });
+        else
+            services.AddDistributedMemoryCache();
+
         services.Configure<RouteOptions>(options =>
         {
             options.LowercaseUrls = true;
