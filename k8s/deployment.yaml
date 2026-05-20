@@ -55,8 +55,8 @@ spec:
               key: RABBITMQ_USERNAME
         - name: Messaging__RabbitMQ__Password
           valueFrom:
-            configMapKeyRef:
-              name: catalog-api-config
+            secretKeyRef:
+              name: catalog-api-secret
               key: RABBITMQ_PASSWORD
         - name: ExternalServices__UserApi__BaseUrl
           valueFrom:
