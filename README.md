@@ -1,71 +1,97 @@
 # FCG API Catalog
 
-**Tech Challenge - Fase 3**
+**Tech Challenge - Fase 4**  
 Plataforma de venda de jogos digitais.
+
+> **Este microsserviço faz parte de um sistema maior.**  
+> Para executar toda a plataforma (Docker Compose ou Kubernetes), veja: [FCG.Infra.Orchestration](../FCG.Infra.Orchestration/README.md)
 
 ## Sobre o Projeto
 
-A FCG API Catalog é uma API REST desenvolvida em .NET 8 para gerenciar jogos e promoções. Este projeto implementa catálogo de jogos e biblioteca pessoal de jogos adquiridos.
-
-> **⚠️ Este microsserviço faz parte de um sistema maior.**  
-> Para executar toda a plataforma (Docker Compose ou Kubernetes), veja: [FCG.Infra.Orchestration](../FCG.Infra.Orchestration/README.md)
- 
+API REST em .NET 8 para gerenciar catálogo de jogos, promoções e biblioteca pessoal. Na Fase 4, foram adicionadas três camadas de infraestrutura: **cache distribuído (Redis)**, **persistência NoSQL (MongoDB)** e **busca avançada com fuzzy search (Elasticsearch)**.
 
 ## Arquitetura
 
-O projeto segue **Clean Architecture** com as seguintes camadas:
-
 ```
-├── FCG.Api.Catalog/                    # Controllers, Middlewares
-├── FCG.Api.Catalog.Application/        # Commands, Queries (CQRS)
-├── FCG.Api.Catalog.Domain/             # Entidades, Regras de Negócio
-├── FCG.Api.Catalog.Infrastructure.Data/    # EF Core, Repositories
-└── FCG.Api.Catalog.Infrastructure.ExternalServices/     # Apis
+FCG.Api.Catalog/                              # Controllers, DI, Middlewares
+FCG.Api.Catalog.Application/                 # CQRS (Commands/Queries), Cache, DTOs
+FCG.Api.Catalog.Domain/                      # Entidades, Interfaces
+FCG.Api.Catalog.Infrastructure.Data/         # EF Core, MongoDB, Elasticsearch, Redis
+FCG.Api.Catalog.Infrastructure.ExternalServices/  # HTTP clients (UsersAPI)
 ```
 
-### Padrões Utilizados
-- **CQRS** - Separação de Commands e Queries
-- **DDD** - Domain-Driven Design
-- **Repository Pattern** - Abstração de dados
-- **Mediator Pattern** - MediatR
-- **Dependency Injection** - Inversão de controle
-
-## Autenticação
-
-Sistema de autenticação via **AWS Cognito** com JWT Bearer:
-- **Cadastro** com validação de senha segura
-- **Confirmação** de email
-- **Login** com token JWT
-- **Dois níveis de acesso**: Admin e User
+### Padrões
+- **CQRS** via MediatR — commands e queries separados
+- **Repository Pattern** — interfaces no Domain, implementações na Infrastructure
+- **Cache-aside** — Redis com fallback in-memory para dev local
+- **Dual-write** — SQL Server como fonte de verdade; Elasticsearch sincronizado nos commands
 
 ## Tecnologias
 
-- .NET 8
-- ASP.NET Core Web API
-- Entity Framework Core
-- SQL Server
-- AWS Cognito
-- MediatR + FluentValidation
-- xUnit + FluentAssertions
+| Tecnologia | Uso |
+|---|---|
+| .NET 8 / ASP.NET Core | Framework base |
+| SQL Server + EF Core | Persistência principal |
+| MongoDB | Avaliações de jogos (NoSQL) |
+| Redis | Cache de listagens (TTL 5 min) |
+| Elasticsearch / OpenSearch | Busca fuzzy no catálogo |
+| AWS Cognito | Autenticação JWT |
+| RabbitMQ + MassTransit | Mensageria assíncrona |
+| MediatR + FluentValidation | Pipeline CQRS |
 
 ## Variáveis de Ambiente
 
+### Obrigatórias
+
 ```bash
 # Banco de Dados
-ConnectionStrings__DefaultConnection="Server=localhost,1433;Database=FCG_Catalog;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True;"
+ConnectionStrings__DefaultConnection="Server=localhost,1433;Database=FCG_Catalog;..."
 
-# JWT
-Authentication__JwtBearer__Authority="https://cognito-idp.<REGION>.amazonaws.com/<USER_POOL_ID>"
+# Auth
+Authentication__JwtBearer__Authority="https://cognito-idp.<REGION>.amazonaws.com/<POOL_ID>"
 
 # RabbitMQ
 Messaging__RabbitMQ__Host="localhost"
 Messaging__RabbitMQ__Username="guest"
-Messaging__RabbitMQ__Password="guest"
+Messaging__RabbitMQ__Password="<senha>"
+
+# Users API
+ExternalServices__UserApi__BaseUrl="http://localhost:5001"
+ExternalServices__UserApi__TimeoutSeconds="30"
 ```
 
-## Como Executar
+### Fase 4 — Novas variáveis
 
-### Localmente
+```bash
+# Redis (opcional — usa memória local se não configurado)
+Redis__ConnectionString="localhost:6379"
+
+# MongoDB (opcional — usa repositório in-memory se não configurado)
+MongoDB__ConnectionString="mongodb://localhost:27017"
+MongoDB__DatabaseName="fcg_catalog"
+
+# Elasticsearch (opcional — usa NoOp se não configurado)
+Elasticsearch__Url="http://localhost:9200"
+Elasticsearch__Username=""
+Elasticsearch__Password=""
+```
+
+## Setup Local
+
+### Pré-requisitos
+- .NET 8 SDK
+- Docker Desktop
+
+### 1. Subir infraestrutura (SQL Server, RabbitMQ, Redis, MongoDB, Elasticsearch)
+
+```bash
+cd FCG.Infra.Orchestration/docker
+cp .env.example .env   # preencher credenciais AWS/Cognito
+docker compose up -d sqlserver rabbitmq redis mongodb elasticsearch
+```
+
+### 2. Rodar a API
+
 ```bash
 cd src/FCG.Api.Catalog
 dotnet run
@@ -73,70 +99,89 @@ dotnet run
 
 Acesse: http://localhost:5002/swagger
 
-### Docker
-```bash
-docker build -t fcg-catalog .
-docker run -p 5002:80 fcg-catalog
-```
+### 3. Rodar testes
 
-## Funcionalidades
-
-### Jogos
-- Cadastro de jogos (Admin)
-- Listagem de jogos ativos
-- Ativação/Desativação (Admin)
-- Compra de jogos (User)
-- Biblioteca pessoal
-
-### Promoções
-- Criação de promoções com desconto (Admin)
-- Validação de período
-- Listagem de promoções
-
-## Estrutura do Banco
-
-**Entidades principais:**
-- `Games` - Catálogo de jogos
-- `UserGames` - Biblioteca (relacionamento N:N)
-- `Promotions` - Descontos em jogos
-
-## Domain-Driven Design (DDD)
-
-### Event Storming - Fluxo Principal
-
-![alt text](image.png)
-
-## Testes
-
-Execute os testes unitários:
 ```bash
 dotnet test
 ```
 
-Testes implementados em:
-- `FCG.Domain.Tests` - Entidades e regras de negócio
+## Endpoints Fase 4
 
----
+### Avaliações (MongoDB)
+```
+POST /api/reviews              # Criar avaliação de jogo (autenticado)
+GET  /api/reviews/game/{id}    # Listar avaliações de um jogo
+```
 
-## Fase 3 — Novidades
+### Busca Avançada (Elasticsearch)
+```
+GET /api/games/search?q={termo}   # Fuzzy search com relevância
+```
 
-### Temporal Tables
-`Games`, `UserGames` e `Promotions` usam `IsTemporal()` via EF Core — o SQL Server mantém histórico automático das alterações em tabelas `*History`.
+Exemplos:
+```bash
+# Busca exata
+GET /api/games/search?q=cyberpunk
 
-### Observabilidade
-- **AWS X-Ray**: middleware `app.UseXRay("fcg-catalog-api")` habilitado — rastreamento distribuído via CloudWatch
+# Busca com typo (fuzzy)
+GET /api/games/search?q=cyberpunkk
 
-### CI/CD (GitHub Actions)
-- **CI** (`.github/workflows/ci.yml`): build + testes em push/PR na `main`
-- **CD** (`.github/workflows/cd.yml`): build Docker → push ECR → `kubectl set image` no EKS
+# Busca por gênero
+GET /api/games/search?q=rpg
+```
+
+Retorna resultados ordenados por `_score` (relevância), apenas jogos ativos.  
+Campos indexados: `title^3`, `genre^2`, `description`, `publisher`.
+
+## Kubernetes
+
+Manifests em `k8s/`:
+
+| Arquivo | Descrição |
+|---|---|
+| `deployment.yaml` | Deployment com 2 réplicas |
+| `service.yaml` | Service interno (NLB / API Gateway) |
+| `configmap.yaml` | Variáveis não sensíveis |
+| `secret.yaml.example` | Template para o Secret K8s |
+
+**Secrets necessários** (`catalog-api-secret`):
+- `CONNECTION_STRING` — SQL Server
+- `JWT_AUTHORITY` — Cognito
+- `REDIS_CONNECTION_STRING` — ElastiCache
+- `MONGODB_CONNECTION_STRING` — Atlas M0
+- `ELASTICSEARCH_URL` / `ELASTICSEARCH_USERNAME` / `ELASTICSEARCH_PASSWORD` — OpenSearch
+- `RABBITMQ_PASSWORD` — RabbitMQ
+
+## CI/CD (GitHub Actions)
+
+| Workflow | Trigger | Ação |
+|---|---|---|
+| `ci.yml` | push / PR na `main` | Build + testes unitários |
+| `cd.yml` | CI passou | Build Docker → push ECR → deploy EKS |
 
 **Secrets obrigatórios no repositório GitHub:**
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
+- `AWS_SESSION_TOKEN` (se AWS Academy)
+- `ECR_REGISTRY`
+- `EKS_CLUSTER_NAME`
 
-### Kubernetes
-Manifests em `k8s/`:
-- `deployment.yaml` — Deployment com 2 réplicas
-- `service.yaml` — Service NLB interno (integrado ao AWS API Gateway via VPC Link)
-- `configmap.yaml` — Variáveis não sensíveis
-- `secret.yaml` — Connection string, Cognito
+---
+
+## Fase 4 — Novidades
+
+### Cache Distribuído (Redis)
+- `GetAllGames` e `GetActiveGames` cacheados com TTL de 5 minutos
+- Cache invalidado automaticamente em `CreateGame`, `UpdateGame`, `ActivateGame`, `DeactivateGame`
+- Fallback para `IMemoryCache` quando Redis não está configurado (dev local)
+
+### Persistência NoSQL (MongoDB)
+- Avaliações de jogos (`GameReview`) armazenadas como documentos no MongoDB
+- Validação: jogo deve existir no SQL Server antes de aceitar avaliação
+- `InMemoryGameReviewRepository` usado automaticamente em dev local
+
+### Busca Avançada (Elasticsearch)
+- Índice `games` criado/atualizado automaticamente ao criar, editar, ativar ou desativar jogos
+- Multi-match com `fuzziness: AUTO` — tolera erros de digitação
+- `bool` query com `filter` em `isActive: true` — jogos inativos excluídos
+- `NoOpGameSearchService` usado automaticamente quando Elasticsearch não configurado
