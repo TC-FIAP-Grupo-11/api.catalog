@@ -88,6 +88,21 @@ spec:
             configMapKeyRef:
               name: catalog-api-config
               key: MONGODB_DATABASE_NAME
+        - name: Elasticsearch__Url
+          valueFrom:
+            secretKeyRef:
+              name: catalog-api-secret
+              key: ELASTICSEARCH_URL
+        - name: Elasticsearch__Username
+          valueFrom:
+            secretKeyRef:
+              name: catalog-api-secret
+              key: ELASTICSEARCH_USERNAME
+        - name: Elasticsearch__Password
+          valueFrom:
+            secretKeyRef:
+              name: catalog-api-secret
+              key: ELASTICSEARCH_PASSWORD
         - name: NEW_RELIC_LICENSE_KEY
           valueFrom:
             secretKeyRef:

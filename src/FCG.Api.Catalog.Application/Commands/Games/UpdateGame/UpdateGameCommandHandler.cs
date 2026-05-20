@@ -2,12 +2,16 @@ using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using FCG.Api.Catalog.Application.Cache;
 using FCG.Api.Catalog.Application.Contracts.Repositories;
+using FCG.Api.Catalog.Application.Contracts.Services;
 using FCG.Lib.Shared.Application.Common.Models;
 using FCG.Lib.Shared.Application.Common.Errors;
 
 namespace FCG.Api.Catalog.Application.Commands.Games.UpdateGame;
 
-public class UpdateGameCommandHandler(IGameRepository gameRepository, IDistributedCache cache)
+public class UpdateGameCommandHandler(
+    IGameRepository gameRepository,
+    IDistributedCache cache,
+    IGameSearchService searchService)
     : IRequestHandler<UpdateGameCommand, Result>
 {
     public async Task<Result> Handle(UpdateGameCommand request, CancellationToken cancellationToken)
@@ -30,6 +34,7 @@ public class UpdateGameCommandHandler(IGameRepository gameRepository, IDistribut
 
             await gameRepository.UpdateAsync(game, cancellationToken);
             await InvalidateCacheAsync(cancellationToken);
+            await searchService.UpdateIndexAsync(game, cancellationToken);
 
             return Result.Success();
         }

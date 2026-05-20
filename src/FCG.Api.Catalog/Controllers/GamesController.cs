@@ -15,6 +15,7 @@ using FCG.Api.Catalog.Contracts.Requests;
 using FCG.Api.Catalog.Domain.Entities;
 using FCG.Api.Catalog.Application.Commands.Games.PurchaseGame;
 using FCG.Api.Catalog.Application.Queries.Games.GetUserGames;
+using FCG.Api.Catalog.Application.Queries.Games.SearchGames;
 
 namespace FCG.Api.Catalog.Controllers;
 
@@ -44,6 +45,16 @@ public class GamesController(IMediator mediator) : ControllerBase
             ? await _mediator.Send(new GetAllGamesQuery(pageNumber, pageSize))
             : await _mediator.Send(new GetActiveGamesQuery(pageNumber, pageSize));
 
+        return result.ToActionResult();
+    }
+
+    [HttpGet("search")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Search([FromQuery] string q)
+    {
+        var result = await _mediator.Send(new SearchGamesQuery(q));
         return result.ToActionResult();
     }
 

@@ -1,7 +1,10 @@
+using Elastic.Clients.Elasticsearch;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using FCG.Api.Catalog.Application.Contracts.Repositories;
+using FCG.Api.Catalog.Application.Contracts.Services;
 using FCG.Api.Catalog.Infrastructure.Data.Context;
+using FCG.Api.Catalog.Infrastructure.Data.Elasticsearch;
 using FCG.Api.Catalog.Infrastructure.Data.MongoDB;
 using FCG.Api.Catalog.Infrastructure.Data.Repositories;
 using FCG.Lib.Shared.Infrastructure.DependencyInjection;
@@ -17,6 +20,7 @@ public static class DependencyInjection
         services.AddSqlServerDatabase<ApplicationDbContext>(configuration);
         services.AddRepositories();
         services.AddMongoDb(configuration);
+        services.AddElasticsearch(configuration);
 
         return services;
     }
@@ -40,6 +44,29 @@ public static class DependencyInjection
         else
         {
             services.AddSingleton<IGameReviewRepository, InMemoryGameReviewRepository>();
+        }
+
+        return services;
+    }
+
+    private static IServiceCollection AddElasticsearch(this IServiceCollection services, IConfiguration configuration)
+    {
+        var url = configuration["Elasticsearch:Url"];
+        if (!string.IsNullOrEmpty(url))
+        {
+            var settings = new ElasticsearchClientSettings(new Uri(url));
+
+            var username = configuration["Elasticsearch:Username"];
+            var password = configuration["Elasticsearch:Password"];
+            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+                settings.Authentication(new Elastic.Transport.BasicAuthentication(username, password));
+
+            services.AddSingleton(new ElasticsearchClient(settings));
+            services.AddScoped<IGameSearchService, GameSearchService>();
+        }
+        else
+        {
+            services.AddSingleton<IGameSearchService, NoOpGameSearchService>();
         }
 
         return services;
